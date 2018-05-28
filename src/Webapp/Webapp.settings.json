@@ -1,0 +1,21 @@
+{
+  "Http": {
+    "Endpoints": {
+      "Main": {
+        "Host": "0.0.0.0",
+        "Scheme": "https",
+        "Port": 443,
+        "Domain": "localhost"
+      }
+    }
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Orleans": "Warning",
+      "Runtime": "Warning"
+    }
+  }
+}

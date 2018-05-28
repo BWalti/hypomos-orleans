@@ -1,0 +1,25 @@
+{
+  "Http": {
+    "Endpoints": {
+      "Main": {
+        "Host": "0.0.0.0",
+        "Scheme": "https",
+        "Port": 443,
+        "Domain": "rrod.sikkema.com",
+        "Domains": ["rrod.westeurope.cloudapp.azure.com"]
+      }
+    }
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Debug"
+    }
+  },
+  "AcmeSettings": {
+    "TermsOfServiceUri": "https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf",
+    "AcmeUri": "https://acme-v01.api.letsencrypt.org/directory"
+  }  
+}

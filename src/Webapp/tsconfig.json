@@ -1,0 +1,34 @@
+{
+  // This config is for vs / vscode
+  "include": [ "ClientApp" ],
+  "exclude": [
+    "dist",
+    "bin",
+    "obj"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "lib": [ "es2017", "dom" ],
+    "allowJs": true,
+    "maxNodeModuleJsDepth": 1,
+    "types": [
+      "webpack-env"
+    ],
+    "typeRoots": [
+      "ClientApp/types",
+      "node_modules/@types"
+    ],
+    "paths": {
+      "react": [ "node_modules/@types/react" ],
+      "redux": [ "node_modules/redux" ],
+      "history": [ "node_modules/@types/history" ],
+      "react-router": [ "ClientApp/types/react-router" ],
+      "*": [
+        "./ClientApp/types/*",
+        "*"
+      ]
+    }
+  }
+}
