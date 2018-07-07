@@ -1,7 +1,7 @@
 {
   "ConnectionStrings": {
-    "DataConnectionString": "UseDevelopmentStorage=true",
-    "ReduxConnectionString": "UseDevelopmentStorage=true",
+    "DataConnectionString": "Server=db;Database=orleans;Uid=orleans;Pwd=orleans;Connect Timeout=30;",
+    "ReduxConnectionString": "Server=db;Database=orleans;Uid=orleans;Pwd=orleans;Connect Timeout=30;",
     "SmtpConnectionString": "Host=smtp.sendgrid.net;UserName=[YOUR_USERNAME];Password=[YOUR PASSWORD]"
   },
   "Logging": {

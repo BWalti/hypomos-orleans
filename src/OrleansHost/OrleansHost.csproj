@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <GenerateFullPaths>true</GenerateFullPaths>
     <OutputType>Exe</OutputType>
     <UserSecretsId>rrod-secrets</UserSecretsId>
     <LangVersion>7.1</LangVersion>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,13 +15,17 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.DockerSecrets.Unofficial" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Orleans.OrleansAzureUtils" Version="2.0.0" />
-    <PackageReference Include="Certes" Version="2.0.1" />
-    <PackageReference Include="MimeKit" Version="2.0.3" />
-    <PackageReference Include="MailKit" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Orleans.OrleansProviders" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Orleans.OrleansSqlUtils" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Reminders.AdoNet" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="2.0.3" />
+    <PackageReference Include="Certes" Version="2.3.0" />
+    <PackageReference Include="MimeKit" Version="2.0.4" />
+    <PackageReference Include="MailKit" Version="2.0.4" />
+    <PackageReference Include="Orleans.Clustering.Kubernetes" Version="1.0.18" />
   </ItemGroup>
 
   <ItemGroup>

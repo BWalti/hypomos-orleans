@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  webapp:
+    image: ${DOCKER_REGISTRY}webapp
+    build:
+      context: .
+      dockerfile: src/Webapp/Dockerfile
+  orleanshost:
+    image: ${DOCKER_REGISTRY}host
+    build:
+      context: .
+      dockerfile: src/OrleansHost/Dockerfile
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: thatsmypassword
+      MYSQL_DATABASE: orleans
+      MYSQL_USER: orleans
+      MYSQL_PASSWORD: orleans
+    volumes:
+      - type: volume
+        source: dbdata
+        target: /var/lib/mysql
+
+volumes:
+  dbdata: 
+    external:
+      name: dbdata-volume

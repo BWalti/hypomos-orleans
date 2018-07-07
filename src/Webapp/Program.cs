@@ -1,15 +1,11 @@
 using GrainInterfaces;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Concurrency;
 using Orleans.Configuration;
-using Orleans.Hosting;
-using Orleans.Providers.Streams.AzureQueue;
 using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
@@ -80,13 +76,13 @@ namespace Webapp
                         // services.AddSingleton<IConfiguration>(config);
                         services.Configure<ClusterOptions>(config);
                     })
-                    .AddAzureQueueStreams<AzureQueueDataAdapterV2>("Default", builder => builder.Configure(options => options.ConnectionString = config.GetConnectionString("DataConnectionString")))
+                    //.AddAzureQueueStreams<AzureQueueDataAdapterV2>("Default", builder => builder.Configure(options => options.ConnectionString = config.GetConnectionString("DataConnectionString")))
                     .ConfigureApplicationParts(parts =>
                     {
                         parts.AddApplicationPart(typeof(ICounterGrain).Assembly).WithReferences();
-                        parts.AddApplicationPart(typeof(AzureQueueDataAdapterV2).Assembly).WithReferences();
+                        //parts.AddApplicationPart(typeof(AzureQueueDataAdapterV2).Assembly).WithReferences();
                     })
-                    .UseAzureStorageClustering(options => options.ConnectionString = config.GetConnectionString("DataConnectionString"))
+                    //.UseAzureStorageClustering(options => options.ConnectionString = config.GetConnectionString("DataConnectionString"))
                     .Build();
 
                 try
