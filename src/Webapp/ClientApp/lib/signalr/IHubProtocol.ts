@@ -14,9 +14,17 @@ export const enum MessageType {
     Close = 7,
 }
 
-export interface MessageHeaders { [key: string]: string; }
+export interface MessageHeaders {
+    [key: string]: string;
+}
 
-export type HubMessage = InvocationMessage | StreamInvocationMessage | StreamItemMessage | CompletionMessage | CancelInvocationMessage | PingMessage | CloseMessage;
+export type HubMessage = InvocationMessage |
+                         StreamInvocationMessage |
+                         StreamItemMessage |
+                         CompletionMessage |
+                         CancelInvocationMessage |
+                         PingMessage |
+                         CloseMessage;
 
 export interface HubMessageBase {
     readonly type: MessageType;

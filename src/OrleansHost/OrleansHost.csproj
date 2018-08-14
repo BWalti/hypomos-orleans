@@ -15,17 +15,17 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.DockerSecrets.Unofficial" Version="1.1.2" />
     <PackageReference Include="Microsoft.Orleans.OrleansProviders" Version="2.0.0" />
     <PackageReference Include="Microsoft.Orleans.OrleansSqlUtils" Version="2.0.0" />
     <PackageReference Include="Microsoft.Orleans.Persistence.AdoNet" Version="2.0.0" />
     <PackageReference Include="Microsoft.Orleans.Reminders.AdoNet" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="2.0.4" />
     <PackageReference Include="Certes" Version="2.3.0" />
-    <PackageReference Include="MimeKit" Version="2.0.4" />
-    <PackageReference Include="MailKit" Version="2.0.4" />
-    <PackageReference Include="Orleans.Clustering.Kubernetes" Version="1.0.18" />
+    <PackageReference Include="MimeKit" Version="2.0.6" />
+    <PackageReference Include="MailKit" Version="2.0.6" />
+    <PackageReference Include="Orleans.Clustering.Kubernetes" Version="1.0.19" />
   </ItemGroup>
 
   <ItemGroup>

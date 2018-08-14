@@ -1,25 +1,25 @@
-using GrainInterfaces;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Orleans;
-using Orleans.Concurrency;
-using Orleans.Configuration;
-using Orleans.Runtime;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
-using Webapp.Models;
-using Webapp.Services;
-
 namespace Webapp
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using GrainInterfaces;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Orleans;
+    using Orleans.Concurrency;
+    using Orleans.Configuration;
+    using Orleans.Runtime;
+    using Webapp.Models;
+    using Webapp.Services;
+
     public class Program
     {
         private static readonly ManualResetEvent clientStopped = new ManualResetEvent(false);
@@ -31,19 +31,20 @@ namespace Webapp
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddInMemoryCollection(new Dictionary<string, string> // add default settings, that will be overridden by commandline
-                {
-                    {"Id", "Webapp"},
-                    {"Version", "1.0.0"},
-                    {"ClusterId", "rrod-cluster"},
-                    {"ServiceId", "rrod"}
-                })
+                .AddInMemoryCollection(
+                    new Dictionary<string, string> // add default settings, that will be overridden by commandline
+                    {
+                        {"Id", "Webapp"},
+                        {"Version", "1.0.0"},
+                        {"ClusterId", "rrod-cluster"},
+                        {"ServiceId", "rrod"}
+                    })
                 .AddCommandLine(args)
-                .AddJsonFile("Webapp.settings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"Webapp.settings.{environment}.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("/run/config/Webapp.settings.json", optional: true, reloadOnChange: true)
-                .AddDockerSecrets("/run/secrets", optional: true)
-                .AddUserSecrets<Program>(optional: true)
+                .AddJsonFile("Webapp.settings.json", true, true)
+                .AddJsonFile($"Webapp.settings.{environment}.json", true, true)
+                .AddJsonFile("/run/config/Webapp.settings.json", true, true)
+                .AddDockerSecrets("/run/secrets", true)
+                .AddUserSecrets<Program>(true)
                 .AddEnvironmentVariables("RROD_")
                 .Build();
 
@@ -55,15 +56,17 @@ namespace Webapp
 
             foreach (var provider in config.Providers)
             {
-                logger.LogInformation($"Config Provider {provider.GetType().Name}: {provider.GetChildKeys(Enumerable.Empty<string>(), null).Count()} settings");
+                logger.LogInformation(
+                    $"Config Provider {provider.GetType().Name}: {provider.GetChildKeys(Enumerable.Empty<string>(), null).Count()} settings");
             }
 
             // ServicePointManager.CheckCertificateRevocationList = false;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol =
+                SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             ServicePointManager.DefaultConnectionLimit = 20;
 
-            int attempt = 0;
-            int initializeAttemptsBeforeFailing = 7;
+            var attempt = 0;
+            var initializeAttemptsBeforeFailing = 7;
             IClusterClient clusterClient = null;
             while (true)
             {
@@ -72,16 +75,20 @@ namespace Webapp
                     .ConfigureServices((context, services) =>
                     {
                         // services.AddOptions();
-                        services.AddSingleton<ILoggerFactory>(loggerFactory);
+                        services.AddSingleton(loggerFactory);
+
                         // services.AddSingleton<IConfiguration>(config);
                         services.Configure<ClusterOptions>(config);
                     })
+
                     //.AddAzureQueueStreams<AzureQueueDataAdapterV2>("Default", builder => builder.Configure(options => options.ConnectionString = config.GetConnectionString("DataConnectionString")))
                     .ConfigureApplicationParts(parts =>
                     {
                         parts.AddApplicationPart(typeof(ICounterGrain).Assembly).WithReferences();
+
                         //parts.AddApplicationPart(typeof(AzureQueueDataAdapterV2).Assembly).WithReferences();
                     })
+
                     //.UseAzureStorageClustering(options => options.ConnectionString = config.GetConnectionString("DataConnectionString"))
                     .Build();
 
@@ -94,7 +101,8 @@ namespace Webapp
                 catch (OrleansException)
                 {
                     attempt++;
-                    logger.LogWarning($"Attempt {attempt} of {initializeAttemptsBeforeFailing} failed to initialize the Orleans client.");
+                    logger.LogWarning(
+                        $"Attempt {attempt} of {initializeAttemptsBeforeFailing} failed to initialize the Orleans client.");
 
                     if (clusterClient != null)
                     {
@@ -113,23 +121,27 @@ namespace Webapp
             }
 
             var endpoints = config.GetSection("Http:Endpoints")
-                    .GetChildren()
-                    .ToDictionary(section => section.Key, section =>
-                    {
-                        var endpoint = new EndpointConfiguration();
-                        section.Bind(endpoint);
-                        return endpoint;
-                    });
+                .GetChildren()
+                .ToDictionary(section => section.Key, section =>
+                {
+                    var endpoint = new EndpointConfiguration();
+                    section.Bind(endpoint);
+                    return endpoint;
+                });
 
             // if so, start a listener to respond to Acme (Let's Encrypt) requests, using a response received via an Orleans Cache Grain
-            var hasHttps = endpoints.Any(endpoint => endpoint.Value.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase));
-            var needPort80 = endpoints.Any(endpoint => (endpoint.Value.Port ?? (endpoint.Value.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase) ? 443 : 80)) == 80);
+            var hasHttps = endpoints.Any(endpoint =>
+                endpoint.Value.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase));
+            var needPort80 = endpoints.Any(endpoint =>
+                (endpoint.Value.Port ??
+                 (endpoint.Value.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase) ? 443 : 80)) ==
+                80);
             var certs = new Dictionary<string, X509Certificate2>();
 
             var acmeOptions = new AcmeOptions
             {
                 AcmeSettings = config.GetSection(nameof(AcmeSettings)).Get<AcmeSettings>(),
-                GetChallengeResponse = async (challenge) =>
+                GetChallengeResponse = async challenge =>
                 {
                     var cacheGrain = clusterClient.GetGrain<ICacheGrain<string>>(challenge);
                     var response = await cacheGrain.Get();
@@ -140,12 +152,12 @@ namespace Webapp
                     var cacheGrain = clusterClient.GetGrain<ICacheGrain<string>>(challenge);
                     await cacheGrain.Set(new Immutable<string>(response), TimeSpan.FromHours(2));
                 },
-                StoreCertificate = async (string domainName, byte[] certData) =>
+                StoreCertificate = async (domainName, certData) =>
                 {
                     var certGrain = clusterClient.GetGrain<ICertGrain>(domainName);
                     await certGrain.UpdateCertificate(certData);
                 },
-                RetrieveCertificate = async (domainName) =>
+                RetrieveCertificate = async domainName =>
                 {
                     var certGrain = clusterClient.GetGrain<ICertGrain>(domainName);
                     var certData = await certGrain.GetCertificate();
@@ -162,22 +174,18 @@ namespace Webapp
                     .UseConfiguration(config)
                     .ConfigureServices(services =>
                     {
-                        services.AddSingleton<IClusterClient>(clusterClient);
-                        services.AddSingleton<ILoggerFactory>(loggerFactory);
+                        services.AddSingleton(clusterClient);
+                        services.AddSingleton(loggerFactory);
                         services.Configure<AcmeSettings>(config.GetSection(nameof(AcmeSettings)));
 
                         // Register a certitificate manager, supplying methods to store and retreive certificates and acme challenge responses
                         services.AddAcmeCertificateManager(acmeOptions);
                     })
+
                     // .UseUrls("http://*:80")
                     .PreferHostingUrls(false)
-                    .UseKestrel(options => {
-                        options.Listen(IPAddress.Any, 80);
-                    })
-                    .Configure(app =>
-                    {
-                        app.UseAcmeResponse();
-                    })
+                    .UseKestrel(options => { options.Listen(IPAddress.Any, 80); })
+                    .Configure(app => { app.UseAcmeResponse(); })
                     .Build();
 
                 try
@@ -186,16 +194,20 @@ namespace Webapp
                 }
                 catch (Exception e)
                 {
-                    logger.LogError("Error: can't start web listener for acme certificate renewal, probably the web address is in use by another process. Exception message is: " + e.Message);
+                    logger.LogError(
+                        "Error: can't start web listener for acme certificate renewal, probably the web address is in use by another process. Exception message is: " +
+                        e.Message);
                     logger.LogError("Ignoring noncritical error (stop W3SVC or Skype to fix this), continuing...");
                 }
 
                 var certificateManager = acmeHost.Services.GetRequiredService<ICertificateManager>();
+
                 // var certificateManager = new AcmeCertificateManager(Options.Create(acmeOptions));
                 foreach (var endpoint in endpoints)
                 {
                     var endpointConfig = endpoint.Value;
-                    bool isHttpsEndpoint = endpointConfig.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase);
+                    var isHttpsEndpoint =
+                        endpointConfig.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase);
                     var port = endpointConfig.Port ?? (isHttpsEndpoint ? 443 : 80);
 
                     X509Certificate2 certificate = null;
@@ -203,7 +215,7 @@ namespace Webapp
                     {
                         try
                         {
-                            var domains = new List<string> { endpointConfig.Domain }
+                            var domains = new List<string> {endpointConfig.Domain}
                                 .Concat(endpointConfig.Domains)
                                 .Where(ep => !string.IsNullOrEmpty(ep))
                                 .Distinct()
@@ -212,20 +224,24 @@ namespace Webapp
                             logger.LogInformation($"Getting certificate for domain {domains.First()} on port {port}");
 
                             // Request a new certificate with Let's Encrypt and store it for next time
-                            try 
+                            try
                             {
                                 certificate = await certificateManager.GetCertificate(domains);
                             }
                             catch (Exception e)
                             {
-                                logger.LogCritical(e, $"Exception getting certificate for domain {domains.First()}. PfxPassword configured incorrectly?");
+                                logger.LogCritical(e,
+                                    $"Exception getting certificate for domain {domains.First()}. PfxPassword configured incorrectly?");
                             }
+
                             if (certificate == null)
                             {
                                 // It didn't work - create a temporary certificate so that we can still start with an untrusted certificate
-                                logger.LogCritical($"Error getting certificate for domain {domains.First()} (endpoint '{endpoint.Key}'). Creating self-signed temporary certificate...");
+                                logger.LogCritical(
+                                    $"Error getting certificate for domain {domains.First()} (endpoint '{endpoint.Key}'). Creating self-signed temporary certificate...");
                                 certificate = CertHelper.BuildTlsSelfSignedServer(domains);
                             }
+
                             certs.Add(domains.First(), certificate);
                             logger.LogInformation($"Certificate for domain {domains.First()}: {certificate != null}");
                         }
@@ -235,6 +251,7 @@ namespace Webapp
                         }
                     }
                 }
+
                 if (needPort80)
                 {
                     await acmeHost.StopAsync();
@@ -247,29 +264,28 @@ namespace Webapp
                 .ConfigureServices(services =>
                 {
                     // services.AddSingleton<IConfiguration>(config);
-                    services.AddSingleton<IClusterClient>(clusterClient);
-                    services.AddSingleton<ILoggerFactory>(loggerFactory);
+                    services.AddSingleton(clusterClient);
+                    services.AddSingleton(loggerFactory);
                     services.Configure<AcmeSettings>(config.GetSection(nameof(AcmeSettings)));
                     services.AddAcmeCertificateManager(acmeOptions);
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
+
                 // .UseUrls(listenUrls.ToArray())
                 .PreferHostingUrls(false)
-                .Configure(app =>
-                {
-                    app.UseAcmeResponse();
-                })
+                .Configure(app => { app.UseAcmeResponse(); })
                 .UseStartup<Startup>()
                 .UseKestrel(options =>
                 {
                     foreach (var endpoint in endpoints)
                     {
                         var endpointConfig = endpoint.Value;
-                        bool isHttpsEndpoint = endpointConfig.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase);
+                        var isHttpsEndpoint =
+                            endpointConfig.Scheme.Equals("https", StringComparison.InvariantCultureIgnoreCase);
                         var port = endpointConfig.Port ?? (isHttpsEndpoint ? 443 : 80);
 
                         var ipAddresses = new List<IPAddress>();
-                        var hosts = new List<string> { endpointConfig.Host }
+                        var hosts = new List<string> {endpointConfig.Host}
                             .Concat(endpointConfig.Hosts)
                             .Where(ep => !string.IsNullOrEmpty(ep))
                             .Distinct();
@@ -297,17 +313,19 @@ namespace Webapp
                             {
                                 if (isHttpsEndpoint)
                                 {
-                                    var domains = new List<string> { endpointConfig.Domain }
+                                    var domains = new List<string> {endpointConfig.Domain}
                                         .Concat(endpointConfig.Domains)
                                         .Where(ep => !string.IsNullOrEmpty(ep))
                                         .Distinct()
                                         .ToArray();
-                                    
+
                                     if (certs.TryGetValue(domains.First(), out var certificate))
                                     {
-                                        logger.LogInformation($"Kestrel config: Listen on address {address.ToString()}:{port}, certificate {(certificate == null ? "NULL" : certificate.Subject.ToString())}");
+                                        logger.LogInformation(
+                                            $"Kestrel config: Listen on address {address.ToString()}:{port}, certificate {(certificate == null ? "NULL" : certificate.Subject.ToString())}");
                                         listenOptions.UseHttps(certificate);
                                         listenOptions.NoDelay = false;
+
                                         // listenOptions.UseConnectionLogging();
                                     }
                                     else

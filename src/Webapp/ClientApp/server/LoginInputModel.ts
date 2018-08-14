@@ -2,7 +2,5 @@
 //
 
 
-
-export class LoginInputModel  { 
+export class LoginInputModel {
 }
-

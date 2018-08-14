@@ -2,12 +2,10 @@
 //
 
 
-
-export class ApiResult  { 
+export class ApiResult {
     status: string;
     success: boolean;
     message?: string;
     errors?: { [key: string]: string[]; };
     code?: number;
 }
-

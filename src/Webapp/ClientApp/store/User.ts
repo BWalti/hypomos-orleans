@@ -1,12 +1,10 @@
-﻿import { fetch, addTask } from 'domain-task';
-import { Action, Reducer, ActionCreator } from 'redux';
-import { AppThunkAction } from './';
-import { UserModel } from '../server/UserModel';
-import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from './Login';
-import * as Server from '../server/User';
+﻿import { fetch, addTask } from "domain-task";
+import { Reducer } from "redux";
+import { UserModel } from "../server/UserModel";
+import { LOGIN_SUCCESS, LOGOUT_SUCCESS } from "./Login";
 
-export const GETUSER_REQUEST = 'GetUserRequestAction';
-export const GETUSER_RECEIVED = 'GetUserReceivedAction';
+export const GETUSER_REQUEST = "GetUserRequestAction";
+export const GETUSER_RECEIVED = "GetUserReceivedAction";
 
 const DefaultUserModel: UserModel = {
     isAuthenticated: false,
@@ -18,11 +16,11 @@ const DefaultUserModel: UserModel = {
 };
 
 export interface GetUserRequestAction {
-    type: 'GetUserRequestAction';
+    type: "GetUserRequestAction";
 }
 
 export interface GetUserReceivedAction {
-    type: 'GetUserReceivedAction';
+    type: "GetUserReceivedAction";
     payload: UserModel;
 }
 
@@ -33,14 +31,14 @@ export { UserModel };
 type KnownAction = GetUserRequestAction | GetUserReceivedAction;
 
 export const actionCreators = {
-
     getUser: () => async (dispatch, getState) => {
-        let fetchTask = fetch('/account/getuser', {
-                credentials: 'include',
-                headers: new Headers({
-                    'Content-Type': 'application/json'
+        const fetchTask = fetch("/account/getuser",
+                {
+                    credentials: "include",
+                    headers: new Headers({
+                        'Content-Type': "application/json"
+                    })
                 })
-            })
             .then(response => response.json() as Promise<UserModel>)
             .then(userModel => {
                 dispatch({ type: GETUSER_RECEIVED, payload: userModel });
@@ -59,12 +57,12 @@ export const actionCreators = {
 
 export const reducer: Reducer<UserModel> = (state: UserModel, action: KnownAction) => {
     switch (action.type) {
-        case GETUSER_REQUEST:
-            return state;
-        case GETUSER_RECEIVED:
-            return action.payload;
-        default:
-            const exhaustiveCheck: never = action;
+    case GETUSER_REQUEST:
+        return state;
+    case GETUSER_RECEIVED:
+        return action.payload;
+    default:
+        const exhaustiveCheck = action;
     }
 
     return state || DefaultUserModel;

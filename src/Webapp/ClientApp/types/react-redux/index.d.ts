@@ -18,8 +18,8 @@
 // a separate line instead of as a decorator. Discussed in this github issue:
 // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/20796
 
-import * as React from 'react';
-import * as Redux from 'redux';
+import * as React from "react";
+import * as Redux from "redux";
 
 type ComponentClass<P> = React.ComponentClass<P>;
 type StatelessComponent<P> = React.StatelessComponent<P>;
@@ -34,7 +34,7 @@ type Diff<T extends string, U extends string> = ({ [P in T]: P } & { [P in U]: n
 type Omit<T, K extends keyof T> = Pick<T, Diff<keyof T, K>>;
 
 export interface DispatchProp<A extends Redux.Action = Redux.AnyAction> {
-  dispatch?: Dispatch<A>;
+    dispatch?: Dispatch<A>;
 }
 
 interface AdvancedComponentDecorator<TProps, TOwnProps> {
@@ -47,7 +47,7 @@ interface AdvancedComponentDecorator<TProps, TOwnProps> {
 export interface InferableComponentEnhancerWithProps<TInjectedProps, TNeedsProps> {
     <P extends TInjectedProps>(
         component: Component<P>
-    ): ComponentClass<Omit<P, keyof TInjectedProps> & TNeedsProps> & {WrappedComponent: Component<P>}
+    ): ComponentClass<Omit<P, keyof TInjectedProps> & TNeedsProps> & { WrappedComponent: Component<P> }
 }
 
 // Injects props and removes them from the prop requirements.
@@ -158,7 +158,10 @@ interface MapStateToPropsFactory<TStateProps, TOwnProps, State> {
     (initialState: State, ownProps: TOwnProps): MapStateToProps<TStateProps, TOwnProps, State>;
 }
 
-type MapStateToPropsParam<TStateProps, TOwnProps, State> = MapStateToPropsFactory<TStateProps, TOwnProps, State> | MapStateToProps<TStateProps, TOwnProps, State> | null | undefined;
+type MapStateToPropsParam<TStateProps, TOwnProps, State> = MapStateToPropsFactory<TStateProps, TOwnProps, State> |
+                                                           MapStateToProps<TStateProps, TOwnProps, State> |
+                                                           null |
+                                                           undefined;
 
 interface MapDispatchToPropsFunction<TDispatchProps, TOwnProps> {
     (dispatch: Dispatch, ownProps: TOwnProps): TDispatchProps;
@@ -171,7 +174,8 @@ interface MapDispatchToPropsFactory<TDispatchProps, TOwnProps> {
     (dispatch: Dispatch, ownProps: TOwnProps): MapDispatchToProps<TDispatchProps, TOwnProps>;
 }
 
-type MapDispatchToPropsParam<TDispatchProps, TOwnProps> = MapDispatchToPropsFactory<TDispatchProps, TOwnProps> | MapDispatchToProps<TDispatchProps, TOwnProps>;
+type MapDispatchToPropsParam<TDispatchProps, TOwnProps> =
+    MapDispatchToPropsFactory<TDispatchProps, TOwnProps> | MapDispatchToProps<TDispatchProps, TOwnProps>;
 
 interface MergeProps<TStateProps, TDispatchProps, TOwnProps, TMergedProps> {
     (stateProps: TStateProps, dispatchProps: TDispatchProps, ownProps: TOwnProps): TMergedProps;
@@ -251,13 +255,13 @@ export interface ConnectOptions {
      * @default name => 'ConnectAdvanced('+name+')'
      * @param componentName
      */
-    getDisplayName?: (componentName: string) => string
+    getDisplayName?: (componentName: string) => string;
     /**
      * Shown in error messages. Usually overridden by wrapper functions.
      *
      * @default 'connectAdvanced'
      */
-    methodName?: string
+    methodName?: string;
     /**
      * If defined, a property named this value will be added to the props passed to the wrapped component. Its value
      * will be the number of times the component has been rendered, which can be useful for tracking down unnecessary
@@ -265,27 +269,27 @@ export interface ConnectOptions {
      *
      * @default undefined
      */
-    renderCountProp?: string
+    renderCountProp?: string;
     /**
      * Controls whether the connector component subscribes to redux store state changes. If set to false, it will only
      * re-render on <code>componentWillReceiveProps</code>.
      *
      * @default true
      */
-    shouldHandleStateChanges?: boolean
+    shouldHandleStateChanges?: boolean;
     /**
      * The key of props/context to get the store. You probably only need this if you are in the inadvisable position of
      * having multiple stores.
      *
      * @default 'store'
      */
-    storeKey?: string
+    storeKey?: string;
     /**
      * If true, stores a ref to the wrapped component instance and makes it available via getWrappedInstance() method.
      *
      * @default false
      */
-    withRef?: boolean
+    withRef?: boolean;
 }
 
 export interface ProviderProps {
@@ -299,7 +303,8 @@ export interface ProviderProps {
 /**
  * Makes the Redux store available to the connect() calls in the component hierarchy below.
  */
-export class Provider extends React.Component<ProviderProps, {}> { }
+export class Provider extends React.Component<ProviderProps, {}> {
+}
 
 /**
  * Creates a new <Provider> which will set the Redux Store on the passed key of the context. You probably only need this

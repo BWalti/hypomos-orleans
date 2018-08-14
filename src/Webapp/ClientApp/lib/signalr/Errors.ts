@@ -4,7 +4,8 @@
 export class HttpError extends Error {
     // tslint:disable-next-line:variable-name
     private __proto__: Error;
-    public statusCode: number;
+    statusCode: number;
+
     constructor(errorMessage: string, statusCode: number) {
         const trueProto = new.target.prototype;
         super(errorMessage);
@@ -19,6 +20,7 @@ export class HttpError extends Error {
 export class TimeoutError extends Error {
     // tslint:disable-next-line:variable-name
     private __proto__: Error;
+
     constructor(errorMessage: string = "A timeout occurred.") {
         const trueProto = new.target.prototype;
         super(errorMessage);

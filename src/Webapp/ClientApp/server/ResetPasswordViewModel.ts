@@ -2,11 +2,9 @@
 //
 
 
-
-export class ResetPasswordViewModel  { 
+export class ResetPasswordViewModel {
     email: string;
     password: string;
     confirmPassword: string;
     code: string;
 }
-

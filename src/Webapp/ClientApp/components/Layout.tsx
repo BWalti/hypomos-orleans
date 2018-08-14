@@ -1,11 +1,11 @@
-import * as React from 'react';
-import NavMenu from './NavMenu';
+import * as React from "react";
+import NavMenu from "./NavMenu";
 
 
-const Layout = ({children}) => 
+const Layout = ({ children }) =>
     <section>
-        <NavMenu />
+        <NavMenu/>
         {children}
-    </section>
+    </section>;
 
 export default Layout;

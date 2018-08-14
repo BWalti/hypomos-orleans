@@ -2,8 +2,6 @@
 //
 
 
-
-export class ForgotPasswordViewModel  { 
+export class ForgotPasswordViewModel {
     email: string;
 }
-

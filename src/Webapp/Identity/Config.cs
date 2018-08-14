@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using IdentityServer4.Models;
-using System.Security.Claims;
-
 namespace Webapp.Identity
 {
+    using System.Collections.Generic;
+    using IdentityServer4.Models;
+
     public static class Config
     {
         public static IEnumerable<ApiResource> GetApiResources()
@@ -33,7 +31,7 @@ namespace Webapp.Identity
                     },
 
                     // scopes that client has access to
-                    AllowedScopes = { "actions" },
+                    AllowedScopes = {"actions"},
                     RequireConsent = false
                 }
             };

@@ -2,8 +2,7 @@
 //
 
 
-
-export class ContactModel  { 
+export class ContactModel {
     firstName?: string;
     lastName?: string;
     email: string;
@@ -12,8 +11,6 @@ export class ContactModel  {
 }
 
 
-
-export class ContactResponse  { 
+export class ContactResponse {
     message: string;
 }
-

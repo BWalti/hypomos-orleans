@@ -1,18 +1,17 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System;
-using Webapp.Services;
-using System.Threading.Tasks;
-using Certes;
-using Certes.Acme;
-using System.Linq;
-using Certes.Pkcs;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Hosting;
-using Certes.Acme.Resource;
-
 namespace Microsoft.AspNetCore.Hosting
 {
+    using System;
+    using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
+    using System.Threading.Tasks;
+    using Certes;
+    using Certes.Acme;
+    using Certes.Acme.Resource;
+    using Certes.Pkcs;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
+    using Webapp.Services;
+
     public static class AcmeConfigurationExtesions
     {
         public static void AddAcmeCertificateManager(this IServiceCollection services, Action<AcmeOptions> options)
@@ -25,6 +24,7 @@ namespace Microsoft.AspNetCore.Hosting
         public static void AddAcmeCertificateManager(this IServiceCollection services, AcmeOptions options)
         {
             services.AddTransient<IConfigureOptions<AcmeOptions>, AcmeOptionsSetup>();
+
             // services.AddSingleton(Options.Create(options));
             services.AddTransient(sp =>
             {
@@ -42,9 +42,10 @@ namespace Microsoft.AspNetCore.Hosting
         Task<X509Certificate2> GetCertificate(string[] domainNames);
     }
 
-    public class AcmeCertificateManager: ICertificateManager
+    public class AcmeCertificateManager : ICertificateManager
     {
-        readonly AcmeOptions options;
+        private readonly AcmeOptions options;
+
         public AcmeCertificateManager(IOptions<AcmeOptions> options)
         {
             this.options = options.Value;
@@ -60,34 +61,38 @@ namespace Microsoft.AspNetCore.Hosting
             // TODO Create a double lock around this using another option method so this does not get 
             // run on multiple machines at the same time...
             X509Certificate2 cert = null;
-            byte[] pfx = await options.RetrieveCertificate(domainNames.First());
+            var pfx = await this.options.RetrieveCertificate(domainNames.First());
             if (pfx != null)
             {
-                cert = new X509Certificate2(pfx, options.AcmeSettings.PfxPassword);
+                cert = new X509Certificate2(pfx, this.options.AcmeSettings.PfxPassword);
                 if (cert.NotAfter - DateTime.UtcNow < TimeSpan.FromDays(21))
                 {
                     // Request a new cert 21 days before the current one expires
-                    pfx = await RequestNewCertificate(domainNames, options.AcmeSettings, options.SetChallengeResponse);
+                    pfx = await RequestNewCertificate(domainNames, this.options.AcmeSettings,
+                        this.options.SetChallengeResponse);
                     if (pfx != null)
                     {
-                        await options.StoreCertificate(domainNames.First(), pfx);
-                        cert = new X509Certificate2(pfx, options.AcmeSettings.PfxPassword);
+                        await this.options.StoreCertificate(domainNames.First(), pfx);
+                        cert = new X509Certificate2(pfx, this.options.AcmeSettings.PfxPassword);
                     }
                 }
             }
             else
             {
-                pfx = await RequestNewCertificate(domainNames, options.AcmeSettings, options.SetChallengeResponse);
+                pfx = await RequestNewCertificate(domainNames, this.options.AcmeSettings,
+                    this.options.SetChallengeResponse);
                 if (pfx != null)
                 {
-                    await options.StoreCertificate(domainNames.First(), pfx);
-                    cert = new X509Certificate2(pfx, options.AcmeSettings.PfxPassword);
+                    await this.options.StoreCertificate(domainNames.First(), pfx);
+                    cert = new X509Certificate2(pfx, this.options.AcmeSettings.PfxPassword);
                 }
             }
+
             return cert;
         }
 
-        static async Task<byte[]> RequestNewCertificate(string[] domainNames, AcmeSettings acmeSettings, Func<string, string, Task> challengeResponseReceiver)
+        private static async Task<byte[]> RequestNewCertificate(string[] domainNames, AcmeSettings acmeSettings,
+            Func<string, string, Task> challengeResponseReceiver)
         {
             using (var client = new AcmeClient(new Uri(acmeSettings.AcmeUri)))
             {
@@ -98,13 +103,13 @@ namespace Microsoft.AspNetCore.Hosting
                 account.Data.Agreement = account.GetTermsOfServiceUri();
                 account = await client.UpdateRegistration(account);
 
-                bool unauthorizedDomain = false;
+                var unauthorizedDomain = false;
+
                 // optimization: paralellize this
                 // var result = Parallel.ForEach(domainNames, async (domaiName, state) => { state.Break(); });
                 // await Task.WhenAll(domainNames.Select(async (domainName) => { await Task.FromResult(0); }));
-                foreach (var domainName in domainNames) 
+                foreach (var domainName in domainNames)
                 {
-                    
                     // Initialize authorization
                     var authz = await client.NewAuthorization(new AuthorizationIdentifier
                     {
@@ -127,14 +132,13 @@ namespace Microsoft.AspNetCore.Hosting
                     var httpChallenge = await client.CompleteChallenge(httpChallengeInfo);
 
                     // Check authorization status
-                    int tryCount = 1;
+                    var tryCount = 1;
                     do
                     {
                         // Wait for ACME server to validate the identifier
                         await Task.Delay(5000);
                         authz = await client.GetAuthorization(httpChallenge.Location);
-                    }
-                    while (authz.Data.Status == EntityStatus.Pending && ++tryCount <= 10);
+                    } while ((authz.Data.Status == EntityStatus.Pending) && (++tryCount <= 10));
 
                     if (authz.Data.Status != EntityStatus.Valid)
                     {
@@ -152,6 +156,7 @@ namespace Microsoft.AspNetCore.Hosting
                     {
                         csr.SubjectAlternativeNames.Add(alternativeName);
                     }
+
                     var cert = await client.NewCertificate(csr);
 
                     // Export Pfx
@@ -160,29 +165,27 @@ namespace Microsoft.AspNetCore.Hosting
 
                     return pfx;
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
         }
     }
 
-   public class AcmeOptionsSetup : IConfigureOptions<AcmeOptions>
+    public class AcmeOptionsSetup : IConfigureOptions<AcmeOptions>
     {
         // private IServiceProvider _services;
-        private AcmeSettings _acmeSettings;
+        private readonly AcmeSettings _acmeSettings;
 
         public AcmeOptionsSetup(IServiceProvider services, IOptions<AcmeSettings> acmeSettings)
         {
             // _services = services;
-            _acmeSettings = acmeSettings.Value;
+            this._acmeSettings = acmeSettings.Value;
         }
 
         public void Configure(AcmeOptions options)
         {
             // options.ApplicationServices = _services;
-            options.AcmeSettings = _acmeSettings;
+            options.AcmeSettings = this._acmeSettings;
         }
     }
 }

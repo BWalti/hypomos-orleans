@@ -1,11 +1,38 @@
-using System;
-using System.Collections.Generic;
-using GrainInterfaces;
-
 namespace Webapp.Identity
 {
+    using System;
+    using System.Collections.Generic;
+    using GrainInterfaces;
+
     public class ApplicationUser
     {
+        public ApplicationUser()
+        {
+        }
+
+        public ApplicationUser(string userId, IdentityState identityData)
+        {
+            this.UserId = userId;
+            this.UserName = identityData.UserName;
+            this.NormalizedUserName = identityData.NormalizedUserName;
+            this.Email = identityData.Email;
+            this.NormalizedEmail = identityData.NormalizedEmail;
+            this.EmailConfirmed = identityData.EmailConfirmed;
+            this.PhoneNumber = identityData.PhoneNumber;
+            this.PhoneNumberConfirmed = identityData.PhoneNumberConfirmed;
+            this.PasswordHash = identityData.PasswordHash;
+            this.SecurityStamp = identityData.SecurityStamp;
+            this.Registered = identityData.Registered;
+            this.LockoutEnabled = identityData.LockoutEnabled;
+            this.LockoutEnd = identityData.LockoutEnd;
+            this.AccessFailedCount = identityData.AccessFailedCount;
+            this.TwoFactorEnabled = identityData.TwoFactorEnabled;
+            this.Roles = identityData.Roles;
+            this.ExternalLogins = identityData.ExternalLogins;
+            this.AuthenticationTokens = identityData.AuthenticationTokens;
+            this.ConcurrencyStamp = identityData.ConcurrencyStamp;
+        }
+
         public string UserId { get; set; }
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }
@@ -28,33 +55,9 @@ namespace Webapp.Identity
         public string ConcurrencyStamp { get; set; }
         public PersonalState PersonalData { get; set; }
 
-        public override string ToString() => this.UserId;
-
-        public ApplicationUser()
+        public override string ToString()
         {
-        }
-
-        public ApplicationUser(string userId, IdentityState identityData)
-        {
-            UserId = userId;
-            UserName = identityData.UserName;
-            NormalizedUserName = identityData.NormalizedUserName;
-            Email = identityData.Email;
-            NormalizedEmail = identityData.NormalizedEmail;
-            EmailConfirmed = identityData.EmailConfirmed;
-            PhoneNumber = identityData.PhoneNumber;
-            PhoneNumberConfirmed = identityData.PhoneNumberConfirmed;
-            PasswordHash = identityData.PasswordHash;
-            SecurityStamp = identityData.SecurityStamp;
-            Registered = identityData.Registered;
-            LockoutEnabled = identityData.LockoutEnabled;
-            LockoutEnd = identityData.LockoutEnd;
-            AccessFailedCount = identityData.AccessFailedCount;
-            TwoFactorEnabled = identityData.TwoFactorEnabled;
-            Roles = identityData.Roles;
-            ExternalLogins = identityData.ExternalLogins;
-            AuthenticationTokens = identityData.AuthenticationTokens;
-            ConcurrencyStamp = identityData.ConcurrencyStamp;
+            return this.UserId;
         }
     }
 

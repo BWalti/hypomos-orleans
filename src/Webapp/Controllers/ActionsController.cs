@@ -1,31 +1,37 @@
-using GrainInterfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Orleans;
-using System;
-using System.Threading.Tasks;
-using Webapp.Services;
-using Microsoft.AspNetCore.Hosting;
-using Webapp.Models;
-
 namespace Webapp.Controllers
 {
+    using System;
+    using System.Threading.Tasks;
+    using GrainInterfaces;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Orleans;
+    using Webapp.Models;
+    using Webapp.Services;
+
     public class ActionsController : Controller
     {
-        private readonly Guid sessionId;
-        private readonly IClusterClient grainClient;
         private readonly IHostingEnvironment env;
+        private readonly IClusterClient grainClient;
+        private readonly Guid sessionId;
 
-        public ActionsController(IClusterClient grainClient, IHttpContextAccessor httpContextAccessor, IHostingEnvironment env): base()
+        public ActionsController(IClusterClient grainClient, IHttpContextAccessor httpContextAccessor,
+            IHostingEnvironment env)
         {
             this.grainClient = grainClient;
             this.env = env;
-            string sessionCookie = httpContextAccessor.HttpContext.Request.Cookies["SESSION"];
+            var sessionCookie = httpContextAccessor.HttpContext.Request.Cookies["SESSION"];
             if (string.IsNullOrEmpty(sessionCookie) || !Guid.TryParse(sessionCookie, out this.sessionId))
             {
                 this.sessionId = Guid.NewGuid();
-                httpContextAccessor.HttpContext.Response.Cookies.Append("SESSION", this.sessionId.ToString(), new CookieOptions { Expires = DateTimeOffset.UtcNow + TimeSpan.FromDays(365), HttpOnly = false, Secure = httpContextAccessor.HttpContext.Request.IsHttps });
+                httpContextAccessor.HttpContext.Response.Cookies.Append("SESSION", this.sessionId.ToString(),
+                    new CookieOptions
+                    {
+                        Expires = DateTimeOffset.UtcNow + TimeSpan.FromDays(365),
+                        HttpOnly = false,
+                        Secure = httpContextAccessor.HttpContext.Request.IsHttps
+                    });
             }
         }
 
@@ -33,14 +39,14 @@ namespace Webapp.Controllers
         public async Task<IActionResult> CounterState(Guid id)
         {
             var grain = this.grainClient.GetGrain<ICounterGrain>(id);
-            try 
+            try
             {
-                var state = (await grain.GetState()) ?? new CounterState();
-                return Ok(state);
+                var state = await grain.GetState() ?? new CounterState();
+                return this.Ok(state);
             }
             catch (Exception e)
             {
-                return StatusCode(500, ApiResult.FromException(e, env.IsDevelopment()));
+                return this.StatusCode(500, ApiResult.FromException(e, this.env.IsDevelopment()));
             }
         }
 
@@ -56,12 +62,10 @@ namespace Webapp.Controllers
                 // We can send the action directly, or send it via a stream
                 var grain = this.grainClient.GetGrain<ICounterGrain>(this.sessionId);
                 await grain.Process(action);
-                return Ok();
+                return this.Ok();
             }
-            else
-            {
-                return BadRequest(ApiModel.AsError("invalid action"));
-            }
+
+            return this.BadRequest(ApiModel.AsError("invalid action"));
         }
 
         [HttpPost("~/startcounter")]
@@ -69,14 +73,14 @@ namespace Webapp.Controllers
         public async Task<ActionResult> StartCounter()
         {
             var grain = this.grainClient.GetGrain<ICounterGrain>(this.sessionId);
-            try 
+            try
             {
                 await grain.StartCounterTimer();
-                return Ok();
+                return this.Ok();
             }
             catch (Exception e)
             {
-                return StatusCode(500, ApiResult.FromException(e, env.IsDevelopment()));
+                return this.StatusCode(500, ApiResult.FromException(e, this.env.IsDevelopment()));
             }
         }
 
@@ -85,14 +89,14 @@ namespace Webapp.Controllers
         public async Task<ActionResult> StopCounter()
         {
             var grain = this.grainClient.GetGrain<ICounterGrain>(this.sessionId);
-            try 
+            try
             {
                 await grain.StopCounterTimer();
-                return Ok();
+                return this.Ok();
             }
             catch (Exception e)
             {
-                return StatusCode(500, ApiResult.FromException(e, env.IsDevelopment()));
+                return this.StatusCode(500, ApiResult.FromException(e, this.env.IsDevelopment()));
             }
         }
 
@@ -103,13 +107,12 @@ namespace Webapp.Controllers
             try
             {
                 await grain.IncrementCounter();
-                return Ok();
+                return this.Ok();
             }
             catch (Exception e)
             {
-                return StatusCode(500, ApiResult.FromException(e, env.IsDevelopment()));
+                return this.StatusCode(500, ApiResult.FromException(e, this.env.IsDevelopment()));
             }
-            
         }
 
         [HttpPost("~/decrementcounter")]
@@ -119,11 +122,11 @@ namespace Webapp.Controllers
             try
             {
                 await grain.DecrementCounter();
-                return Ok();
+                return this.Ok();
             }
             catch (Exception e)
             {
-                return StatusCode(500, ApiResult.FromException(e, env.IsDevelopment()));
+                return this.StatusCode(500, ApiResult.FromException(e, this.env.IsDevelopment()));
             }
         }
     }

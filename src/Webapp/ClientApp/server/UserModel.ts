@@ -2,8 +2,7 @@
 //
 
 
-
-export class UserModel  { 
+export class UserModel {
     isAuthenticated: boolean;
     userId: string;
     email: string;
@@ -11,4 +10,3 @@ export class UserModel  {
     firstName: string;
     lastName: string;
 }
-

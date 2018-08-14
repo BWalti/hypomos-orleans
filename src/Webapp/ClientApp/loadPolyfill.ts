@@ -1,7 +1,7 @@
-import 'core-js/modules/es6.promise';
+import "core-js/modules/es6.promise";
 
 function browserSupportsAllFeatures() {
-    return 'fetch' in window && 'Symbol' in window;
+    return "fetch" in window && "Symbol" in window;
 }
 
 
@@ -11,7 +11,7 @@ export function loadPolyfill(): Promise<any> {
         // Browsers that support all features run `main()` immediately.
         return Promise.resolve();
     } else {
-        return import('./polyfill');
+        return import("./polyfill");
     }
 }
 
@@ -28,7 +28,7 @@ export function loadPolyfill(): Promise<any> {
 //}
 
 function ready() {
-    console.log('loadPolyfill done');
+    console.log("loadPolyfill done");
 }
 
 // do it!

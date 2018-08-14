@@ -1,6 +1,6 @@
 const buildSelector = obj =>
-  Object.keys(obj)
+    Object.keys(obj)
     .map(k => `[${k}="${obj[k]}"]`)
-    .join('');
+    .join("");
 
 export default buildSelector;

@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-
-namespace Webapp.Models
+﻿namespace Webapp.Models
 {
+    using System.ComponentModel.DataAnnotations;
+    using Newtonsoft.Json;
+
     [JsonObject]
     public class SubscribeModel
     {
-        [EmailAddress, Required]
+        [EmailAddress]
+        [Required]
         public string Email { get; set; }
     }
 }

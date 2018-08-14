@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Webapp.Models
+﻿namespace Webapp.Models
 {
+    using System.Collections.Generic;
+
     public class EndpointConfiguration
     {
         public string Host { get; set; }

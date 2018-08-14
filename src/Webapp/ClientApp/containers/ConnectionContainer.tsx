@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
-import { ConnectionState, actionCreators } from '../store/SignalRConnection';
-import { ApplicationState } from '../store/';
+import * as React from "react";
+import { connect } from "react-redux";
+import { ConnectionState, actionCreators } from "../store/SignalRConnection";
+import { ApplicationState } from "../store/";
 
 type ConnectionProps = ConnectionState & typeof actionCreators & { children: React.ReactNode };
 

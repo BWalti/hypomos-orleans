@@ -1,6 +1,6 @@
 {
   // This config is for vs / vscode
-  "include": [ "ClientApp" ],
+  "include": ["ClientApp"],
   "exclude": [
     "dist",
     "bin",
@@ -10,7 +10,7 @@
     "baseUrl": ".",
     "moduleResolution": "node",
     "jsx": "react",
-    "lib": [ "es2017", "dom" ],
+    "lib": ["es2017", "dom"],
     "allowJs": true,
     "maxNodeModuleJsDepth": 1,
     "types": [
@@ -21,10 +21,10 @@
       "node_modules/@types"
     ],
     "paths": {
-      "react": [ "node_modules/@types/react" ],
-      "redux": [ "node_modules/redux" ],
-      "history": [ "node_modules/@types/history" ],
-      "react-router": [ "ClientApp/types/react-router" ],
+      "react": ["node_modules/@types/react"],
+      "redux": ["node_modules/redux"],
+      "history": ["node_modules/@types/history"],
+      "react-router": ["ClientApp/types/react-router"],
       "*": [
         "./ClientApp/types/*",
         "*"

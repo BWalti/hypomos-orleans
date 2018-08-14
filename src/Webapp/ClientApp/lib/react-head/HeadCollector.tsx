@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import * as React from "react";
+import * as PropTypes from "prop-types";
 
 export interface HeadCollectorProps {
     headTags: React.ReactElement<any>[];

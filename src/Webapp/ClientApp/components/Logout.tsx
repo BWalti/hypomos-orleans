@@ -1,9 +1,9 @@
-﻿import * as React from 'react';
-import { connect } from 'react-redux'
-import { ApplicationState } from '../store';
-import { Redirect } from 'react-router-dom';
-import * as LoginStore from '../store/Login';
-import Fullscreen from '../lib/fullscreen'
+﻿import * as React from "react";
+import { connect } from "react-redux"
+import { ApplicationState } from "../store";
+import { Redirect } from "react-router-dom";
+import * as LoginStore from "../store/Login";
+import Fullscreen from "../lib/fullscreen"
 
 
 type LogoutProps = LoginStore.LoginState & typeof LoginStore.actionCreators;
@@ -22,7 +22,7 @@ class Logout extends React.Component<LogoutProps> {
                 </Fullscreen>
             );
         } else {
-            return <Redirect to="/" />;
+            return <Redirect to="/"/>;
         }
     }
 }

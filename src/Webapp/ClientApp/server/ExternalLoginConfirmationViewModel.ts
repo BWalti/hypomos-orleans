@@ -2,8 +2,6 @@
 //
 
 
-
-export class ExternalLoginConfirmationViewModel  { 
+export class ExternalLoginConfirmationViewModel {
     email: string;
 }
-

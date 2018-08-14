@@ -1,31 +1,32 @@
-﻿using IdentityModel;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.SpaServices.Webpack;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Orleans;
-using System.IO.Compression;
-using System.Threading.Tasks;
-using Webapp.Identity;
-using Webapp.Services;
-
-namespace Webapp
+﻿namespace Webapp
 {
+    using System.IO.Compression;
+    using System.Threading.Tasks;
+    using IdentityModel;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.ResponseCompression;
+    using Microsoft.AspNetCore.SpaServices.Webpack;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
+    using Orleans;
+    using Webapp.Identity;
+    using Webapp.Services;
+
     public class Startup
     {
-        private readonly ILoggerFactory loggerFactory;
-        private readonly IHostingEnvironment env;
+        private readonly IClusterClient clusterClient;
         private readonly IConfiguration configuration;
-        private readonly IClusterClient clusterClient; 
+        private readonly IHostingEnvironment env;
+        private readonly ILoggerFactory loggerFactory;
 
-        public Startup(IHostingEnvironment env, IConfiguration configuration, IClusterClient clusterClient, ILoggerFactory loggerFactory)
+        public Startup(IHostingEnvironment env, IConfiguration configuration, IClusterClient clusterClient,
+            ILoggerFactory loggerFactory)
         {
             this.env = env;
             this.configuration = configuration;
@@ -60,26 +61,24 @@ namespace Webapp
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("admin", policy =>
-                {
-                    policy.RequireClaim(JwtClaimTypes.Role, "admin");
-                });
+                options.AddPolicy("admin", policy => { policy.RequireClaim(JwtClaimTypes.Role, "admin"); });
             });
 
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 
             services.AddIdentity<ApplicationUser, UserRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false; ;
-                options.Password.RequiredLength = 5;
-            })
-            .AddUserStore<OrleansUserStore>()
-            .AddRoleStore<OrleansRoleStore>()
-            .AddUserManager<ApplicationUserManager>()
-            .AddDefaultTokenProviders();
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    ;
+                    options.Password.RequiredLength = 5;
+                })
+                .AddUserStore<OrleansUserStore>()
+                .AddRoleStore<OrleansRoleStore>()
+                .AddUserManager<ApplicationUserManager>()
+                .AddDefaultTokenProviders();
 
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
@@ -95,40 +94,29 @@ namespace Webapp
             //    .AddIdentityServerUserClaimsPrincipalFactory<ApplicationUser, UserRole>();
 
             services.AddAuthentication(IdentityConstants.ApplicationScheme)
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/login";
-                options.LogoutPath = "/logout";
-            })
-            .AddJwtBearer(options =>
-            {
-                string baseUrl = this.configuration["baseUrl"];
-                options.Authority = baseUrl;
-                options.RequireHttpsMetadata = !this.env.IsDevelopment();
-                options.Audience = baseUrl;
-                // AllowedScopes = new[] { "email", "openid" },
-                // ApiName = "actions",
-                options.Events = new JwtBearerEvents
+                .AddCookie(options =>
                 {
-                    // For debugging...
-                    OnAuthenticationFailed = async (context) =>
+                    options.LoginPath = "/login";
+                    options.LogoutPath = "/logout";
+                })
+                .AddJwtBearer(options =>
+                {
+                    var baseUrl = this.configuration["baseUrl"];
+                    options.Authority = baseUrl;
+                    options.RequireHttpsMetadata = !this.env.IsDevelopment();
+                    options.Audience = baseUrl;
+
+                    // AllowedScopes = new[] { "email", "openid" },
+                    // ApiName = "actions",
+                    options.Events = new JwtBearerEvents
                     {
-                        await Task.FromResult(0);
-                    },
-                    OnChallenge = async (context) =>
-                    {
-                        await Task.FromResult(0);
-                    },
-                    OnMessageReceived = async (context) =>
-                    {
-                        await Task.FromResult(0);
-                    },
-                    OnTokenValidated = async (context) =>
-                    {
-                        await Task.FromResult(0);
-                    }
-                };
-            });
+                        // For debugging...
+                        OnAuthenticationFailed = async context => { await Task.FromResult(0); },
+                        OnChallenge = async context => { await Task.FromResult(0); },
+                        OnMessageReceived = async context => { await Task.FromResult(0); },
+                        OnTokenValidated = async context => { await Task.FromResult(0); }
+                    };
+                });
 
             services.AddSpaPrerenderer();
 
@@ -139,6 +127,7 @@ namespace Webapp
                     options.LaunchWithDebugging = true;
                     options.DebuggingPort = 9229;
                 }
+
                 options.NodeInstanceOutputLogger = this.loggerFactory.CreateLogger("Node Console Logger");
             });
 
@@ -152,11 +141,11 @@ namespace Webapp
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     options.SerializerSettings.Formatting = Formatting.Indented;
-                    JsonConvert.DefaultSettings = () => new JsonSerializerSettings()
+                    JsonConvert.DefaultSettings = () => new JsonSerializerSettings
                     {
                         ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                        Formatting = Newtonsoft.Json.Formatting.Indented,
-                        NullValueHandling = NullValueHandling.Ignore,
+                        Formatting = Formatting.Indented,
+                        NullValueHandling = NullValueHandling.Ignore
                     };
                 });
         }
@@ -169,6 +158,7 @@ namespace Webapp
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true
+
                     // ReactHotModuleReplacement = true
                 });
             }
@@ -185,22 +175,20 @@ namespace Webapp
             app.UseResponseCompression();
 
             app.UseWebSockets();
+
             // app.Map("/actions", ap => ap.UseMiddleware<WebSocketHandlerMiddleware>(new ActionsHandler()));
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<ActionsHub>("/actionsr");
-            });
+            app.UseSignalR(routes => { routes.MapHub<ActionsHub>("/actionsr"); });
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
 
                 routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
+                    "spa-fallback",
+                    new {controller = "Home", action = "Index"});
             });
         }
     }

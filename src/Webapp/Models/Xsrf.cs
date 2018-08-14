@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-
-namespace Webapp.Models
+﻿namespace Webapp.Models
 {
+    using Newtonsoft.Json;
+
     [JsonObject]
     public class XsrfModel
     {

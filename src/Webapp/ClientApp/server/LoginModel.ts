@@ -2,8 +2,7 @@
 //
 
 
-
-export class LoginModel  { 
+export class LoginModel {
     email: string;
     password: string;
     rememberLogin?: boolean;
@@ -12,4 +11,3 @@ export class LoginModel  {
     requiresTwoFactor?: boolean;
     isNotAllowed?: boolean;
 }
-

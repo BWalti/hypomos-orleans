@@ -19,14 +19,14 @@ export class Subscription<T> {
         this.observer = observer;
     }
 
-    public dispose(): void {
-        const index: number = this.subject.observers.indexOf(this.observer);
+    dispose(): void {
+        const index = this.subject.observers.indexOf(this.observer);
         if (index > -1) {
             this.subject.observers.splice(index, 1);
         }
 
         if (this.subject.observers.length === 0) {
-            this.subject.cancelCallback().catch((_) => { });
+            this.subject.cancelCallback().catch((_) => {});
         }
     }
 }
@@ -36,21 +36,21 @@ export interface Observable<T> {
 }
 
 export class Subject<T> implements Observable<T> {
-    public observers: Array<Observer<T>>;
-    public cancelCallback: () => Promise<void>;
+    observers: Array<Observer<T>>;
+    cancelCallback: () => Promise<void>;
 
     constructor(cancelCallback: () => Promise<void>) {
         this.observers = [];
         this.cancelCallback = cancelCallback;
     }
 
-    public next(item: T): void {
+    next(item: T): void {
         for (const observer of this.observers) {
             observer.next(item);
         }
     }
 
-    public error(err: any): void {
+    error(err: any): void {
         for (const observer of this.observers) {
             if (observer.error) {
                 observer.error(err);
@@ -58,7 +58,7 @@ export class Subject<T> implements Observable<T> {
         }
     }
 
-    public complete(): void {
+    complete(): void {
         for (const observer of this.observers) {
             if (observer.complete) {
                 observer.complete();
@@ -66,7 +66,7 @@ export class Subject<T> implements Observable<T> {
         }
     }
 
-    public subscribe(observer: Observer<T>): Subscription<T> {
+    subscribe(observer: Observer<T>): Subscription<T> {
         this.observers.push(observer);
         return new Subscription(this, observer);
     }

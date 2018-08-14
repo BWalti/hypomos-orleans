@@ -1,14 +1,14 @@
-import * as Counter from './Counter';
-import * as Footer from './Footer';
-import * as Contact from './Contact';
-import * as Session from './Session';
-import * as Connection from './SignalRConnection';
-import * as Login from './Login';
-import * as User from './User';
-import * as Register from './Register';
-import * as Xsrf from './Xsrf';
-import { RouterState } from 'react-router-redux';
-import { ReducersMapObject } from 'redux';
+import * as Counter from "./Counter";
+import * as Footer from "./Footer";
+import * as Contact from "./Contact";
+import * as Session from "./Session";
+import * as Connection from "./SignalRConnection";
+import * as Login from "./Login";
+import * as User from "./User";
+import * as Register from "./Register";
+import * as Xsrf from "./Xsrf";
+import { RouterState } from "react-router-redux";
+import { ReducersMapObject } from "redux";
 
 // The top-level state object
 export interface ApplicationState {
@@ -21,7 +21,7 @@ export interface ApplicationState {
     counter: Counter.CounterState,
     footer: Footer.FooterState,
     contact: Contact.ContactState,
-    router: RouterState
+    router: RouterState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using

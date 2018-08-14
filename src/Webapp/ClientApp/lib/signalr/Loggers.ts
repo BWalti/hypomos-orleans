@@ -4,7 +4,7 @@
 import { ILogger, LogLevel } from "./ILogger";
 
 export class NullLogger implements ILogger {
-    public log(logLevel: LogLevel, message: string): void {
+    log(logLevel: LogLevel, message: string): void {
     }
 }
 
@@ -15,28 +15,28 @@ export class ConsoleLogger implements ILogger {
         this.minimumLogLevel = minimumLogLevel;
     }
 
-    public log(logLevel: LogLevel, message: string): void {
+    log(logLevel: LogLevel, message: string): void {
         if (logLevel >= this.minimumLogLevel) {
             switch (logLevel) {
-                case LogLevel.Error:
-                    console.error(`${LogLevel[logLevel]}: ${message}`);
-                    break;
-                case LogLevel.Warning:
-                    console.warn(`${LogLevel[logLevel]}: ${message}`);
-                    break;
-                case LogLevel.Information:
-                    console.info(`${LogLevel[logLevel]}: ${message}`);
-                    break;
-                default:
-                    console.log(`${LogLevel[logLevel]}: ${message}`);
-                    break;
+            case LogLevel.Error:
+                console.error(`${LogLevel[logLevel]}: ${message}`);
+                break;
+            case LogLevel.Warning:
+                console.warn(`${LogLevel[logLevel]}: ${message}`);
+                break;
+            case LogLevel.Information:
+                console.info(`${LogLevel[logLevel]}: ${message}`);
+                break;
+            default:
+                console.log(`${LogLevel[logLevel]}: ${message}`);
+                break;
             }
         }
     }
 }
 
 export class LoggerFactory {
-    public static createLogger(logging?: ILogger | LogLevel) {
+    static createLogger(logging?: ILogger | LogLevel) {
         if (logging === undefined) {
             return new ConsoleLogger(LogLevel.Information);
         }

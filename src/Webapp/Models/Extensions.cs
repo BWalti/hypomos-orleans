@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
 namespace Webapp.Models
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+
     public static class ModelStateExtensions
     {
         public static ApiResult AsApiResult(this ModelStateDictionary modelState)
@@ -17,6 +17,7 @@ namespace Webapp.Models
                     result.Errors.Add(val.ToString(), new List<string>(val.Errors.Select(error => error.ErrorMessage)));
                 }
             }
+
             result.Message = $"{modelState.ErrorCount} error(s) found";
             return result;
         }

@@ -26,9 +26,9 @@ export class HttpResponse {
 }
 
 export abstract class HttpClient {
-    public get(url: string): Promise<HttpResponse>;
-    public get(url: string, options: HttpRequest): Promise<HttpResponse>;
-    public get(url: string, options?: HttpRequest): Promise<HttpResponse> {
+    get(url: string): Promise<HttpResponse>;
+    get(url: string, options: HttpRequest): Promise<HttpResponse>;
+    get(url: string, options?: HttpRequest): Promise<HttpResponse> {
         return this.send({
             ...options,
             method: "GET",
@@ -36,9 +36,9 @@ export abstract class HttpClient {
         });
     }
 
-    public post(url: string): Promise<HttpResponse>;
-    public post(url: string, options: HttpRequest): Promise<HttpResponse>;
-    public post(url: string, options?: HttpRequest): Promise<HttpResponse> {
+    post(url: string): Promise<HttpResponse>;
+    post(url: string, options: HttpRequest): Promise<HttpResponse>;
+    post(url: string, options?: HttpRequest): Promise<HttpResponse> {
         return this.send({
             ...options,
             method: "POST",
@@ -46,7 +46,7 @@ export abstract class HttpClient {
         });
     }
 
-    public abstract send(request: HttpRequest): Promise<HttpResponse>;
+    abstract send(request: HttpRequest): Promise<HttpResponse>;
 }
 
 export class DefaultHttpClient extends HttpClient {
@@ -57,7 +57,7 @@ export class DefaultHttpClient extends HttpClient {
         this.logger = logger;
     }
 
-    public send(request: HttpRequest): Promise<HttpResponse> {
+    send(request: HttpRequest): Promise<HttpResponse> {
         return new Promise<HttpResponse>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
 

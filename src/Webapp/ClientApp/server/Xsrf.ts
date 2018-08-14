@@ -2,8 +2,6 @@
 //
 
 
-
-export class XsrfModel  { 
+export class XsrfModel {
     xsrfToken: string;
 }
-

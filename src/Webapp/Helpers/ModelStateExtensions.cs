@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Collections.Generic;
-using System.Linq;
-using Webapp.Models;
-
-namespace Webapp.Helpers
+﻿namespace Webapp.Helpers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using Webapp.Models;
+
     public static class ModelStateExtensions
     {
         public static ApiResult AsApiResult(this ModelStateDictionary modelState)
@@ -19,13 +19,15 @@ namespace Webapp.Helpers
                     result.Errors.Add(key, new List<string>(val.Errors.Select(error => error.ErrorMessage)));
                 }
             }
+
             result.Message = $"{modelState.ErrorCount} error(s) found";
             return result;
         }
 
-        public static ApiModel<TValue> AsApiModel<TValue>(this ModelStateDictionary modelState, TValue val) where TValue : class
+        public static ApiModel<TValue> AsApiModel<TValue>(this ModelStateDictionary modelState, TValue val)
+            where TValue : class
         {
-            return new ApiModel<TValue>(val, modelState.AsApiResult());
+            return new ApiModel<TValue>(val, AsApiResult(modelState));
         }
     }
 }

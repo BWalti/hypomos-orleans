@@ -1,9 +1,8 @@
-﻿using GrainInterfaces;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-
-namespace Webapp.Models
+﻿namespace Webapp.Models
 {
+    using System.ComponentModel.DataAnnotations;
+    using Newtonsoft.Json;
+
     [JsonObject]
     public class UserModel
     {
@@ -11,8 +10,10 @@ namespace Webapp.Models
         public bool IsAuthenticated { get; set; }
 
         public string UserId { get; set; }
+
         [EmailAddress]
         public string Email { get; set; }
+
         public string PhoneNumber { get; set; }
 
         public string FirstName { get; set; }

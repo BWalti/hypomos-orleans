@@ -1,27 +1,29 @@
-﻿using System;
-using Microsoft.Extensions.Caching.Distributed;
-using Webapp.Services;
-
-namespace Microsoft.Extensions.DependencyInjection
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
+    using System;
+    using Microsoft.Extensions.Caching.Distributed;
+    using Webapp.Services;
+
     public class OrleansCacheOptions
     {
-
     }
 
     /// <summary>
-    /// Extension methods for setting up Redis distributed cache related services in an <see cref="IServiceCollection" />.
+    ///     Extension methods for setting up Redis distributed cache related services in an <see cref="IServiceCollection" />.
     /// </summary>
     public static class OrleansCacheServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds Orleans distributed caching services to the specified <see cref="IServiceCollection" />.
+        ///     Adds Orleans distributed caching services to the specified <see cref="IServiceCollection" />.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
-        /// <param name="setupAction">An <see cref="Action{OrleansCacheOptions}"/> to configure the provided
-        /// <see cref="OrleansCacheOptions"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddOrleansCache(this IServiceCollection services, Action<OrleansCacheOptions> setupAction)
+        /// <param name="setupAction">
+        ///     An <see cref="Action{OrleansCacheOptions}" /> to configure the provided
+        ///     <see cref="OrleansCacheOptions" />.
+        /// </param>
+        /// <returns>The <see cref="IServiceCollection" /> so that additional calls can be chained.</returns>
+        public static IServiceCollection AddOrleansCache(this IServiceCollection services,
+            Action<OrleansCacheOptions> setupAction)
         {
             if (services == null)
             {

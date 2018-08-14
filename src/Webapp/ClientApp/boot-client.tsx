@@ -1,19 +1,17 @@
 // import 'core-js/es6/set'; // react-dom.development requires Set to be there at load time, so this can't be polyfilled async for development
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
-import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
-import { createBrowserHistory } from 'history';
-import configureStore from './configureStore';
-import { ApplicationState } from './store';
-import { actionCreators as xsrfActionCreatores } from './store/Xsrf';
-import * as SignalRModule from './store/SignalRConnection';
-import * as RoutesModule from './routes';
-import ConnectionContainer from './containers/ConnectionContainer';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { AppContainer } from "react-hot-loader";
+import { Provider } from "react-redux";
+import { ConnectedRouter } from "react-router-redux";
+import { createBrowserHistory } from "history";
+import configureStore from "./configureStore";
+import { ApplicationState } from "./store";
+import * as RoutesModule from "./routes";
+import ConnectionContainer from "./containers/ConnectionContainer";
 // import { loadPolyfill } from './loadPolyfill';
 
-import './css/site.scss';
+import "./css/site.scss";
 
 function main() {
 
@@ -43,11 +41,11 @@ function main() {
             <AppContainer>
                 <Provider store={store}>
                     <ConnectionContainer>
-                        <ConnectedRouter history={history} children={routes} />
+                        <ConnectedRouter history={history} children={routes}/>
                     </ConnectionContainer>
                 </Provider>
             </AppContainer>,
-            document.getElementById('react-app')
+            document.getElementById("react-app")
         );
     }
 
@@ -55,10 +53,11 @@ function main() {
 
     // Allow Hot Module Replacement
     if (module.hot) {
-        module.hot.accept('./routes', () => {
-            routes = require<typeof RoutesModule>('./routes').routes;
-            renderApp();
-        });
+        module.hot.accept("./routes",
+            () => {
+                routes = require<typeof RoutesModule>("./routes").routes;
+                renderApp();
+            });
         // module.hot.accept('./store/SignalRConnection', () => {
         //     store.dispatch(SignalRModule.actionCreators.stopListener());
         //     const nextSignalRModule = require<typeof SignalRModule>('./store/SignalRConnection');
@@ -72,4 +71,3 @@ main();
 // Load polyfills for IE (we need at least version 10 because WebSockets)
 //loadPolyfill()
 //    .then(main);
-

@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-using GrainInterfaces;
-
-namespace Webapp.Identity
+﻿namespace Webapp.Identity
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Identity;
+
     public class OrleansRoleStore : IRoleStore<UserRole>
     {
         public Task<IdentityResult> CreateAsync(UserRole role, CancellationToken cancellationToken)
@@ -50,7 +47,8 @@ namespace Webapp.Identity
             throw new NotImplementedException();
         }
 
-        public Task SetNormalizedRoleNameAsync(UserRole role, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedRoleNameAsync(UserRole role, string normalizedName,
+            CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

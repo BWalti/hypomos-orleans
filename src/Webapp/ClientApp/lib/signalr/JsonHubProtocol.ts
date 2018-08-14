@@ -1,7 +1,8 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-import { CloseMessage, CompletionMessage, HubMessage, IHubProtocol, InvocationMessage, MessageType, PingMessage, StreamItemMessage } from "./IHubProtocol";
+import { CompletionMessage, HubMessage, IHubProtocol, InvocationMessage, MessageType, StreamItemMessage } from
+    "./IHubProtocol";
 import { ILogger, LogLevel } from "./ILogger";
 import { NullLogger } from "./Loggers";
 import { TextMessageFormat } from "./TextMessageFormat";
@@ -11,12 +12,12 @@ export const JSON_HUB_PROTOCOL_NAME: string = "json";
 
 export class JsonHubProtocol implements IHubProtocol {
 
-    public readonly name: string = JSON_HUB_PROTOCOL_NAME;
-    public readonly version: number = 1;
+    readonly name = JSON_HUB_PROTOCOL_NAME;
+    readonly version: number = 1;
 
-    public readonly transferFormat: TransferFormat = TransferFormat.Text;
+    readonly transferFormat: TransferFormat = TransferFormat.Text;
 
-    public parseMessages(input: string, logger: ILogger): HubMessage[] {
+    parseMessages(input: string, logger: ILogger): HubMessage[] {
         if (!input) {
             return [];
         }
@@ -35,25 +36,25 @@ export class JsonHubProtocol implements IHubProtocol {
                 throw new Error("Invalid payload.");
             }
             switch (parsedMessage.type) {
-                case MessageType.Invocation:
-                    this.isInvocationMessage(parsedMessage);
-                    break;
-                case MessageType.StreamItem:
-                    this.isStreamItemMessage(parsedMessage);
-                    break;
-                case MessageType.Completion:
-                    this.isCompletionMessage(parsedMessage);
-                    break;
-                case MessageType.Ping:
-                    // Single value, no need to validate
-                    break;
-                case MessageType.Close:
-                    // All optional values, no need to validate
-                    break;
-                default:
-                    // Future protocol changes can add message types, old clients can ignore them
-                    logger.log(LogLevel.Information, "Unknown message type '" + parsedMessage.type + "' ignored.");
-                    continue;
+            case MessageType.Invocation:
+                this.isInvocationMessage(parsedMessage);
+                break;
+            case MessageType.StreamItem:
+                this.isStreamItemMessage(parsedMessage);
+                break;
+            case MessageType.Completion:
+                this.isCompletionMessage(parsedMessage);
+                break;
+            case MessageType.Ping:
+                // Single value, no need to validate
+                break;
+            case MessageType.Close:
+                // All optional values, no need to validate
+                break;
+            default:
+                // Future protocol changes can add message types, old clients can ignore them
+                logger.log(LogLevel.Information, `Unknown message type '${parsedMessage.type}' ignored.`);
+                continue;
             }
             hubMessages.push(parsedMessage);
         }
@@ -61,7 +62,7 @@ export class JsonHubProtocol implements IHubProtocol {
         return hubMessages;
     }
 
-    public writeMessage(message: HubMessage): string {
+    writeMessage(message: HubMessage): string {
         return TextMessageFormat.write(JSON.stringify(message));
     }
 

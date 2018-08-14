@@ -1,17 +1,16 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Orleans;
-
 namespace Webapp.Controllers
 {
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Orleans;
+
     // The home controller generates the initial home page, as wel as the aspnet-javascript serverside fallback pages (mostly for seo)
     public class InfoController : Controller
     {
-        readonly IClusterClient clusterClient;
-        readonly IHostingEnvironment env;
-        readonly IConfiguration config;
+        private readonly IClusterClient clusterClient;
+        private readonly IConfiguration config;
+        private readonly IHostingEnvironment env;
 
         public InfoController(IClusterClient clusterClient, IHostingEnvironment env, IConfiguration config)
         {
@@ -20,10 +19,12 @@ namespace Webapp.Controllers
             this.config = config;
         }
 
-        [HttpGet, Route("~/info")]
+        [HttpGet]
+        [Route("~/info")]
         public IActionResult Index()
         {
-            return Content($"Webapp is alive. Id = {config["Id"]}, Version = {config["Version"]}");
+            return this.Content($"Webapp is alive. Id = {this.config["Id"]}, Version = {this.config["Version"]}");
+
             // todo connect to orleanshost and get its version and Id
         }
     }

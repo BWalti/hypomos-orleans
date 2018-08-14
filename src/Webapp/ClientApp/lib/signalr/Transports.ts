@@ -38,7 +38,7 @@ export class WebSocketTransport implements ITransport {
         this.accessTokenFactory = accessTokenFactory || (() => null);
     }
 
-    public connect(url: string, transferFormat: TransferFormat, connection: IConnection): Promise<void> {
+    connect(url: string, transferFormat: TransferFormat, connection: IConnection): Promise<void> {
         Arg.isRequired(url, "url");
         Arg.isRequired(transferFormat, "transferFormat");
         Arg.isIn(transferFormat, TransferFormat, "transferFormat");
@@ -73,7 +73,8 @@ export class WebSocketTransport implements ITransport {
             };
 
             webSocket.onmessage = (message: MessageEvent) => {
-                this.logger.log(LogLevel.Trace, `(WebSockets transport) data received. ${getDataDetail(message.data)}.`);
+                this.logger.log(LogLevel.Trace,
+                    `(WebSockets transport) data received. ${getDataDetail(message.data)}.`);
                 if (this.onreceive) {
                     this.onreceive(message.data);
                 }
@@ -92,7 +93,7 @@ export class WebSocketTransport implements ITransport {
         });
     }
 
-    public send(data: any): Promise<void> {
+    send(data: any): Promise<void> {
         if (this.webSocket && this.webSocket.readyState === WebSocket.OPEN) {
             this.logger.log(LogLevel.Trace, `(WebSockets transport) sending data. ${getDataDetail(data)}.`);
             this.webSocket.send(data);
@@ -102,7 +103,7 @@ export class WebSocketTransport implements ITransport {
         return Promise.reject("WebSocket is not in the OPEN state");
     }
 
-    public stop(): Promise<void> {
+    stop(): Promise<void> {
         if (this.webSocket) {
             this.webSocket.close();
             this.webSocket = null;
@@ -110,8 +111,8 @@ export class WebSocketTransport implements ITransport {
         return Promise.resolve();
     }
 
-    public onreceive: DataReceived;
-    public onclose: TransportClosed;
+    onreceive: DataReceived;
+    onclose: TransportClosed;
 }
 
 export class ServerSentEventsTransport implements ITransport {
@@ -127,7 +128,7 @@ export class ServerSentEventsTransport implements ITransport {
         this.logger = logger;
     }
 
-    public connect(url: string, transferFormat: TransferFormat, connection: IConnection): Promise<void> {
+    connect(url: string, transferFormat: TransferFormat, connection: IConnection): Promise<void> {
         Arg.isRequired(url, "url");
         Arg.isRequired(transferFormat, "transferFormat");
         Arg.isIn(transferFormat, TransferFormat, "transferFormat");
@@ -188,11 +189,11 @@ export class ServerSentEventsTransport implements ITransport {
         });
     }
 
-    public async send(data: any): Promise<void> {
+    async send(data: any): Promise<void> {
         return send(this.logger, "SSE", this.httpClient, this.url, this.accessTokenFactory, data);
     }
 
-    public stop(): Promise<void> {
+    stop(): Promise<void> {
         if (this.eventSource) {
             this.eventSource.close();
             this.eventSource = null;
@@ -200,8 +201,8 @@ export class ServerSentEventsTransport implements ITransport {
         return Promise.resolve();
     }
 
-    public onreceive: DataReceived;
-    public onclose: TransportClosed;
+    onreceive: DataReceived;
+    onclose: TransportClosed;
 }
 
 export class LongPollingTransport implements ITransport {
@@ -220,7 +221,7 @@ export class LongPollingTransport implements ITransport {
         this.pollAbort = new AbortController();
     }
 
-    public connect(url: string, transferFormat: TransferFormat, connection: IConnection): Promise<void> {
+    connect(url: string, transferFormat: TransferFormat, connection: IConnection): Promise<void> {
         Arg.isRequired(url, "url");
         Arg.isRequired(transferFormat, "transferFormat");
         Arg.isIn(transferFormat, TransferFormat, "transferFormat");
@@ -235,7 +236,8 @@ export class LongPollingTransport implements ITransport {
 
         if (transferFormat === TransferFormat.Binary && (typeof new XMLHttpRequest().responseType !== "string")) {
             // This will work if we fix: https://github.com/aspnet/SignalR/issues/742
-            throw new Error("Binary protocols over XmlHttpRequest not implementing advanced features are not supported.");
+            throw new Error(
+                "Binary protocols over XmlHttpRequest not implementing advanced features are not supported.");
         }
 
         this.poll(this.url, transferFormat);
@@ -273,7 +275,8 @@ export class LongPollingTransport implements ITransport {
                     }
                     this.pollAbort.abort();
                 } else if (response.statusCode !== 200) {
-                    this.logger.log(LogLevel.Error, `(LongPolling transport) Unexpected response code: ${response.statusCode}`);
+                    this.logger.log(LogLevel.Error,
+                        `(LongPolling transport) Unexpected response code: ${response.statusCode}`);
 
                     // Unexpected status code
                     if (this.onclose) {
@@ -283,7 +286,8 @@ export class LongPollingTransport implements ITransport {
                 } else {
                     // Process the response
                     if (response.content) {
-                        this.logger.log(LogLevel.Trace, `(LongPolling transport) data received. ${getDataDetail(response.content)}.`);
+                        this.logger.log(LogLevel.Trace,
+                            `(LongPolling transport) data received. ${getDataDetail(response.content)}.`);
                         if (this.onreceive) {
                             this.onreceive(response.content);
                         }
@@ -307,17 +311,17 @@ export class LongPollingTransport implements ITransport {
         }
     }
 
-    public async send(data: any): Promise<void> {
+    async send(data: any): Promise<void> {
         return send(this.logger, "LongPolling", this.httpClient, this.url, this.accessTokenFactory, data);
     }
 
-    public stop(): Promise<void> {
+    stop(): Promise<void> {
         this.pollAbort.abort();
         return Promise.resolve();
     }
 
-    public onreceive: DataReceived;
-    public onclose: TransportClosed;
+    onreceive: DataReceived;
+    onclose: TransportClosed;
 }
 
 function getDataDetail(data: any): string {
@@ -330,8 +334,13 @@ function getDataDetail(data: any): string {
     return length;
 }
 
-async function send(logger: ILogger, transportName: string, httpClient: HttpClient, url: string, accessTokenFactory: () => string, content: string | ArrayBuffer): Promise<void> {
-    let headers;
+async function send(logger: ILogger,
+    transportName: string,
+    httpClient: HttpClient,
+    url: string,
+    accessTokenFactory: () => string,
+    content: string | ArrayBuffer): Promise<void> {
+    let headers: { Authorization: string };
     const token = accessTokenFactory();
     if (token) {
         headers = {
@@ -341,10 +350,12 @@ async function send(logger: ILogger, transportName: string, httpClient: HttpClie
 
     logger.log(LogLevel.Trace, `(${transportName} transport) sending data. ${getDataDetail(content)}.`);
 
-    const response = await httpClient.post(url, {
-        content,
-        headers,
-    });
+    const response = await httpClient.post(url,
+        {
+            content,
+            headers,
+        });
 
-    logger.log(LogLevel.Trace, `(${transportName} transport) request complete. Response status: ${response.statusCode}.`);
+    logger.log(LogLevel.Trace,
+        `(${transportName} transport) request complete. Response status: ${response.statusCode}.`);
 }
